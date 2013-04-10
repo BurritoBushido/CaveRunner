@@ -15,10 +15,13 @@ public class Player : MonoBehaviour {
 	int idleFrameIndex = -1;
 	int state;
 	
+	bool isInvunerable = false;
+	Renderer blinker;
 	void Awake()
 	{
 		sprite = GetComponent<Spritesheet>();	
 		movement = GetComponent<PlayerMovement>();
+		blinker = GameObject.Find("Blinker").renderer;
 		
 		NotificationCenter.AddObserver(this, "StartFalling");
 		NotificationCenter.AddObserver(this, "Landed");
@@ -38,6 +41,17 @@ public class Player : MonoBehaviour {
 	
 	void HandleInput()
 	{
+		if(Input.GetKeyDown(KeyCode.Space))
+		{
+			blinker.renderer.enabled = true;
+			isInvunerable = true;
+			
+		}
+		else if(Input.GetKeyUp(KeyCode.Space))
+		{
+			isInvunerable = false;
+			blinker.renderer.enabled = false;
+		}
 		
 		if(Input.GetKeyUp(KeyCode.UpArrow))
 		{
@@ -178,6 +192,9 @@ public class Player : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider collider)
 	{
+		if(isInvunerable)
+			return;
+		
 		movement.HitByMonster();
 		print("Collided with " + collider.transform.name);	
 	}
