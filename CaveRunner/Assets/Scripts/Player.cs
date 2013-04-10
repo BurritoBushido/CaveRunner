@@ -175,4 +175,10 @@ public class Player : MonoBehaviour {
 			yield return new WaitForSeconds(1.0f);
 		}
 	}
+	
+	void OnTriggerEnter(Collider collider)
+	{
+		movement.HitByMonster();
+		print("Collided with " + collider.transform.name);	
+	}
 }

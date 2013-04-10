@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class MapGenerator : MonoBehaviour {
 
+	const int MAP_LAYER = 8;
 	int maxSegments = 10;
 	
 	float prevSegmentHeight = 0;
@@ -38,6 +39,7 @@ public class MapGenerator : MonoBehaviour {
 		newSegment.transform.localScale = new Vector3(width, height, 20);
 		newSegment.transform.position = new Vector3(x, y, 0);
 		newSegment.transform.parent = map;
+		newSegment.layer = MAP_LAYER;
 		farthestX = newSegment.collider.bounds.max.x;
 		
 		prevSegmentHeight = newSegment.collider.bounds.max.y;

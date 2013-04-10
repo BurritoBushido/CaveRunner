@@ -249,4 +249,9 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	
 	}
+	
+	public void HitByMonster()
+	{
+		speedX = -100;
+	}
 }
