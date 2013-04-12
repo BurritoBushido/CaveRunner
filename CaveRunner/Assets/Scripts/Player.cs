@@ -1,5 +1,5 @@
 //uncomment below to make player auto run.
-#define AUTO_RUN  
+#define AUTO_RUN 
 using UnityEngine;
 using System.Collections;
 
@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 	
 	bool isInvunerable = false;
 	Renderer blinker;
+	int jumpTouchIndex = -1;
 	
 	void Awake()
 	{
@@ -37,7 +38,9 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		#if UNITY_IPHONE
+		#if UNITY_EDITOR
+			HandleInput();
+		#elif UNITY_IPHONE
 			HandleMobileInput();
 		#else
 			HandleInput();
@@ -75,16 +78,39 @@ public class Player : MonoBehaviour {
 	
 	void HandleMobileInput()
 	{
+		
+#if AUTO_RUN
+		movement.MoveRight();
+		switch(state)
+		{
+		case IDLE:
+			state = RUN;
+			StartWalkCycle();
+			break;
+		case JUMP:
+			StartJumpAnim();
+			break;
+		case FALL:
+			StartFalling();
+			break;
+		}	
+#endif
+		int touchIndex = 0;
   		foreach (Touch touch in Input.touches) 
 		{
-			
-			
 			if(touch.position.x < Screen.width * .5f)	//Left side of screen handles jump
 			{
+				
             	if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+				{
 					JumpRelease();
-				else
+					jumpTouchIndex = -1;
+				}
+				else if(jumpTouchIndex == -1)
+				{
 					JumpPress();
+					jumpTouchIndex = touchIndex;
+				}
 			}
 			else //right side handles blink
 			{ 
@@ -93,7 +119,7 @@ public class Player : MonoBehaviour {
 				else
 					BlinkPress();
 			}
-            
+            touchIndex++;
         }
 	}
 	

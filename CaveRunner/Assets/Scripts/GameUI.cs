@@ -8,6 +8,8 @@ public class GameUI : MonoBehaviour {
 	void Start () {
 		StartCoroutine(CR_CalculateDistance());
 		best.text = "best: " + GameObject.Find("Highscore").GetComponent<Highscore>().GetHighestScore();
+		
+		
 	}
 	
 	// Update is called once per frame
