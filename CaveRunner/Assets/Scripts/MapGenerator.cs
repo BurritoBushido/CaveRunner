@@ -20,8 +20,11 @@ public class MapGenerator : MonoBehaviour {
 		segments = new List<GameObject>();
 		map = GameObject.Find("Map").transform;	
 		maxDistanceSqrd = (maxHeight * maxHeight) + (maxLength * maxLength);
+		prevSegmentHeight = -100;
+		
 		StartCoroutine(CR_GenerateMap());
 		StartCoroutine(CR_DestroySegments());
+		
 	}
 	void CreateSegment()
 	{

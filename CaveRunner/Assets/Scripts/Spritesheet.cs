@@ -36,7 +36,6 @@ public class Spritesheet : MonoBehaviour {
 		
 		isAnimating = false;
 	
-		print(spriteU + " " + spriteV);
 		renderer.material.SetTextureScale("_MainTex", new Vector2(spriteU, spriteV));
 	}
 	

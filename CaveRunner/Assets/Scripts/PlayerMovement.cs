@@ -10,9 +10,10 @@ public class PlayerMovement : MonoBehaviour {
 	public float friction = .1f;
 	public float airFriciton = .5f;
 	public float gravity = 100;
-	public float jumpSpeed = 80.0f;
+	public float jumpSpeed = 150.0f;
 	
 	public bool isGrounded {get { return isCollidingDown;}}
+	public bool isJumpPressed {get; set;}
 	
 	public float physicScale = 2.0f;	//scales physics easily
 		
@@ -44,7 +45,7 @@ public class PlayerMovement : MonoBehaviour {
 		if(isCollidingDown)
 		{
 			isCollidingDown = false;
-			speedY += jumpSpeed;
+			speedY += jumpSpeed * .2f;
 			collisionIndex &= ~8;
 			
 			StartCoroutine(CR_Jump());
@@ -53,6 +54,18 @@ public class PlayerMovement : MonoBehaviour {
 	
 	IEnumerator CR_Jump()
 	{
+		float heldDownDuration = 0;
+		float maxJumpBoost = jumpSpeed;
+
+		while(isJumpPressed && heldDownDuration < .4f)
+		{
+			heldDownDuration += Time.deltaTime;
+			speedY += jumpSpeed * Time.deltaTime;
+			yield return 0;
+		}
+		
+		print("END");
+		
 		while(speedY > 0)
 		{
 			yield return 0;	

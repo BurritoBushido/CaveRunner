@@ -1,5 +1,5 @@
 //uncomment below to make player auto run.
-//#define AUTO_RUN  
+#define AUTO_RUN  
 using UnityEngine;
 using System.Collections;
 
@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 	
 	bool isInvunerable = false;
 	Renderer blinker;
+	
 	void Awake()
 	{
 		sprite = GetComponent<Spritesheet>();	
@@ -36,32 +37,84 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		HandleInput();
+		#if UNITY_IPHONE
+			HandleMobileInput();
+		#else
+			HandleInput();
+		#endif
+	}
+	
+	void JumpPress()
+	{
+		movement.isJumpPressed = true;
+		if(movement.isGrounded)
+		{
+			movement.Jump();
+			state = JUMP;
+			StartJumpAnim();
+			print("JUMP" + state);
+		}	
+	}
+	
+	void JumpRelease()
+	{
+		movement.isJumpPressed = false;
+	}
+	
+	void BlinkPress()
+	{
+		blinker.renderer.enabled = true;
+		isInvunerable = true;	
+	}
+	
+	void BlinkRelease()
+	{
+		isInvunerable = false;
+		blinker.renderer.enabled = false;
+	}
+	
+	void HandleMobileInput()
+	{
+  		foreach (Touch touch in Input.touches) 
+		{
+			
+			
+			if(touch.position.x < Screen.width * .5f)	//Left side of screen handles jump
+			{
+            	if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+					JumpRelease();
+				else
+					JumpPress();
+			}
+			else //right side handles blink
+			{ 
+            	if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+					BlinkRelease();
+				else
+					BlinkPress();
+			}
+            
+        }
 	}
 	
 	void HandleInput()
 	{
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
-			blinker.renderer.enabled = true;
-			isInvunerable = true;
-			
+			BlinkPress();
 		}
 		else if(Input.GetKeyUp(KeyCode.Space))
 		{
-			isInvunerable = false;
-			blinker.renderer.enabled = false;
+			BlinkRelease();
 		}
 		
 		if(Input.GetKeyUp(KeyCode.UpArrow))
 		{
-			if(movement.isGrounded)
-			{
-				movement.Jump();
-				state = JUMP;
-				StartJumpAnim();
-				print("JUMP" + state);
-			}
+			JumpRelease();
+		}
+		else if(Input.GetKeyDown(KeyCode.UpArrow))
+		{
+			JumpPress();
 		}
 #if AUTO_RUN
 		movement.MoveRight();
@@ -183,6 +236,9 @@ public class Player : MonoBehaviour {
 		{
 			if(transform.position.y < -200)
 			{
+				Hashtable data = new Hashtable();
+				data["Score"] = transform.position.x;
+				NotificationCenter.PostNotification(this, "CheckForHighscore", data);
 				Application.LoadLevel(0);
 				//transform.position = new Vector3(0, 20, 0);	
 			}
@@ -196,6 +252,6 @@ public class Player : MonoBehaviour {
 			return;
 		
 		movement.HitByMonster();
-		print("Collided with " + collider.transform.name);	
+		//print("Collided with " + collider.transform.name);	
 	}
 }
